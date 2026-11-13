@@ -1,15 +1,17 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 function App() {
-  // const queryKey = ["products"];
-  // const queryFn = async () => {
-  //   const response = await fetch("https://fakestoreapi.com/products");
-  //   return response.json();
-  // };
+  const queryClient = useQueryClient();
 
-  // const { isPending, isLoading, data, error } = useQuery({ queryKey, queryFn });
-  // // isLoading => isPending && isFetching
-  // console.log({ isPending, isLoading, data, error });
+  const queryKey = ["products"];
+  const queryFn = async () => {
+    const response = await fetch("https://fakestoreapi.com/products");
+    return response.json();
+  };
+
+  const { isPending, isLoading, data, error } = useQuery({ queryKey, queryFn });
+  // isLoading => isPending && isFetching
+  console.log({ isPending, isLoading, data, error });
 
   const mutationFn = (product) => {
     fetch("https://fakestoreapi.com/products", {
@@ -26,8 +28,11 @@ function App() {
   const clickHandler = () => {
     const product = { title: "New Product", price: 29.99 };
     return mutate(product, {
-      onSuccess: (data) => console.log("data" , data),
-      onError: (error) => console.log("error" , error),
+      onSuccess: (data) => {
+        console.log("data", data);
+        queryClient.invalidateQueries({ queryKey: ["products"] });
+      },
+      onError: (error) => console.log("error", error),
     });
   };
 
