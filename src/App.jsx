@@ -1,14 +1,20 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryKey = ["products"];
+  const queryFn = async () => {
+    const response = await fetch("https://fakestoreapi.com/products");
+    return response.json();
+  };
+
+  const { isPending, isLoading, data, error } = useQuery({ queryKey, queryFn });
+  // isLoading => isPending && isFetching
+  console.log({ isPending, isLoading, data, error });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div>
-        <h3>App</h3>
-      </div>
-    </QueryClientProvider>
+    <div>
+      <h3>App</h3>
+    </div>
   );
 }
 
